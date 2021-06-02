@@ -14,6 +14,7 @@
 #include "save_file.h"
 #include "print.h"
 #include "engine/surface_load.h"
+#include "sprite/msprite_print.h"
 
 /* @file hud.c
  * This file implements HUD rendering and power meter animations.
@@ -512,6 +513,8 @@ void render_hud(void) {
         if (hudDisplayFlags & HUD_DISPLAY_FLAG_TIMER) {
             render_hud_timer();
         }
+
+        print_cream(50, 60, -1, "Hi, hello, this is a test!\n(using Dev's epic MSprite engine)");
 
         if (gSurfacePoolError & NOT_ENOUGH_ROOM_FOR_SURFACES)
         {

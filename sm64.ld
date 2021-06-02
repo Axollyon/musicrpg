@@ -126,6 +126,7 @@ SECTIONS
       KEEP(BUILD_DIR/asm/entry.o(.text));
 
       BUILD_DIR/src/game*.o(.text);
+      BUILD_DIR/src/sprite*.o(.text);
       BUILD_DIR/src/hvqm*.o(.text);
       BUILD_DIR/src/gdb*.o(.text);
       BUILD_DIR/src/usb*.o(.text);
@@ -144,6 +145,7 @@ SECTIONS
 
       /* data */
       BUILD_DIR/src/game*.o(.*data*);
+      BUILD_DIR/src/sprite*.o(.*data*);
       BUILD_DIR/src/gdb*.o(.*data*);
       BUILD_DIR/src/usb*.o(.*data*);
       BUILD_DIR/src/audio*.o(.*data*);
@@ -160,6 +162,7 @@ SECTIONS
 
       /* rodata */
       BUILD_DIR/src/game*.o(.rodata*);
+      BUILD_DIR/src/sprite*.o(.rodata*);
       BUILD_DIR/src/gdb*.o(.*rodata*);
       BUILD_DIR/src/usb*.o(.rodata*);
       BUILD_DIR/src/audio*.o(.rodata*);
@@ -178,6 +181,7 @@ SECTIONS
    BEGIN_NOLOAD(main)
    {
       BUILD_DIR/src/game*.o(.*bss*);
+      BUILD_DIR/src/sprite*.o(.*bss*);
       BUILD_DIR/src/hvqm*.o(.*bss*);
       BUILD_DIR/src/gdb*.o(.*bss*);
       BUILD_DIR/src/usb*.o(.*bss*);
