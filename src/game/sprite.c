@@ -2,19 +2,14 @@
 
 #include "sprite.h"
 
-static u8 sp_filter = 0;
+static u8 sp_filter;
 
 Gfx *sprite_filter(Gfx *gfx, int filter)
 {
-    if (!filter)
+    sp_filter = filter != 0;
+    if (gfx != NULL)
     {
-        sp_filter = 0;
-        gDPSetTextureFilter(gfx++, G_TF_POINT);
-    }
-    else
-    {
-        sp_filter = 1;
-        gDPSetTextureFilter(gfx++, G_TF_BILERP);
+        gDPSetTextureFilter(gfx++, sp_filter ? G_TF_BILERP : G_TF_POINT);
     }
     return gfx;
 }
