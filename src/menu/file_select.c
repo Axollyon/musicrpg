@@ -22,7 +22,7 @@
 #include "sm64.h"
 #include "text_strings.h"
 #include "src/sprite/mdraw.h"
-#include "src/sprite/msprites.h"
+#include "src/sprite/sprites.h"
 
 #include "eu_translation.h"
 #ifdef VERSION_EU
@@ -2259,19 +2259,20 @@ void print_save_file_scores(s8 fileIndex) {
  * Prints file select strings depending on the menu selected.
  * Also checks if all saves exists and defines text and main menu timers.
  */
-static void draw_title_msprites(void) {
+static void draw_title_sprites(void) {
     draw_titlebg();
     gDPSetCombineLERP(
         gDisplayListHead++,
-        0, 0, 0, 0, 0, 0, 0, TEXEL0,
-        0, 0, 0, 0, 0, 0, 0, TEXEL0
+        0, 0, 0, ENVIRONMENT, 0, 0, 0, TEXEL0,
+        0, 0, 0, ENVIRONMENT, 0, 0, 0, TEXEL0
     );
+    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
     gDPSetTexturePersp(gDisplayListHead++, G_TP_NONE);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_XLU_SURF, G_RM_AA_XLU_SURF2);
     mfilter(1);
     mprint_start();
-    mprint(640, 520, -1, MPRINT_CJUST, "START GAME");
-    mprint(640, 600, -1, MPRINT_CJUST, "OPTIONS");
+    mprint(640, 540, -1, MPRINT_CJUST, "START GAME");
+    mprint(640, 640, -1, MPRINT_CJUST, "OPTIONS");
 }
 
 /**
@@ -2279,7 +2280,7 @@ static void draw_title_msprites(void) {
  */
 Gfx *geo_file_select_strings_and_menu_cursor(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx) {
     if (callContext == GEO_CONTEXT_RENDER) {
-        draw_title_msprites();
+        draw_title_sprites();
     }
     return NULL;
 }

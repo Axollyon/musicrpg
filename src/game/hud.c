@@ -15,7 +15,7 @@
 #include "print.h"
 #include "engine/surface_load.h"
 #include "sprite/mdraw.h"
-#include "sprite/msprites.h"
+#include "sprite/sprites.h"
 
 /* @file hud.c
  * This file implements HUD rendering and power meter animations.
