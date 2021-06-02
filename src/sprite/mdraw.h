@@ -1,15 +1,15 @@
 /******************************************************************************
- *                 msprite.h: Sprite draw code by devwizard.                  *
+ *                    mdraw.c: Drawing code by devwizard.                     *
  ******************************************************************************/
 
-#ifndef __MSPRITE_H__
-#define __MSPRITE_H__
+#ifndef __MDRAW_H__
+#define __MDRAW_H__
 
 #include <ultra64.h>
 
 #ifndef __ASSEMBLER__
 
-/* Sprite info */
+/* MSprite texture info */
 typedef struct msprite
 {
     const void *timg;           /* pointer to the texture data */
@@ -20,14 +20,16 @@ typedef struct msprite
 }
 MSPRITE;
 
-/* Set filtering */
-extern Gfx *msp_filter(Gfx *gfx, int filter);
+/* Filtering */
+extern void mfilter(int filter);
 
-/* Sprite drawing */
-extern Gfx *msp_draw(
-    Gfx *gfx, const MSPRITE *msprite, int x, int y, int w, int h
-);
+/* Drawing sprite */
+extern void msprite(const MSPRITE *msp, int x, int y, int w, int h);
+
+/* Printing */
+extern void mprint_start(void);
+extern void mprint(int x, int y, unsigned int max, const char *str);
 
 #endif /* __ASSEMBLER__ */
 
-#endif /* __MSPRITE_H__ */
+#endif /* __MDRAW_H__ */

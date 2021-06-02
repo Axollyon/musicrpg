@@ -1,6 +1,6 @@
 #include <PR/ultratypes.h>
 #include <PR/gs2dex.h>
-#include "src/sprite/msprite.h"
+#include "src/sprite/mdraw.h"
 extern u8 cream_tex_0[];
 extern u8 cream_tex_1[];
 extern u8 cream_tex_2[];

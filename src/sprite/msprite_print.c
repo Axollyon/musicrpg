@@ -1,6 +1,6 @@
 #include <ultra64.h>
 #include <PR/gs2dex.h>
-#include "msprite.h"
+#include "mdraw.h"
 #include "src/game/game_init.h"
 
 #include "textures/cream.h"
@@ -151,7 +151,7 @@ void print_cream(s16 x, s16 y, s16 limit, char *str) {
     gDPSetCombineMode(gDisplayListHead++, G_CC_DECALRGBA, G_CC_DECALRGBA);
     gDPSetTexturePersp(gDisplayListHead++, G_TP_NONE);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_XLU_SURF, G_RM_AA_XLU_SURF2);
-    gDisplayListHead = msp_filter(gDisplayListHead, 1);
+    mfilter(1);
     for (i = 0; i < length && (limit < 0 || i < limit); i++) {
         switch (str[i]) {
             case '\n':
@@ -159,7 +159,7 @@ void print_cream(s16 x, s16 y, s16 limit, char *str) {
                 yOffset += 64;
                 break;
             default:
-                gDisplayListHead = msp_draw(gDisplayListHead, &cream_msprites[(int) str[i]], x + xOffset, y + yOffset, 85, 85);
+                msprite(&cream_msprites[(int) str[i]], x + xOffset, y + yOffset, 85, 85);
                 xOffset += tbl[(int) str[i]] * (1 + (1.0f / 3.0f));
                 break;
         }

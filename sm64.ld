@@ -66,6 +66,9 @@ OUTPUT_ARCH (mips)
    } \
    END_SEG(name##_geo)
 
+segment_to_virtual = segmented_to_virtual;
+video_gfx = gDisplayListHead;
+
 SECTIONS
 {
    __romPos = 0;

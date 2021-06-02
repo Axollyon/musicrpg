@@ -3391,3 +3391,5 @@ const s16 seg2_painting_mesh_neighbor_tris[] = {
       3, 240, 242, 244,
       1, 243,
 };
+
+#include "sprite/mprint.c"
