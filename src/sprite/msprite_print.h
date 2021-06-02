@@ -1,1 +1,0 @@
-extern void print_cream(s32 x, s32 y, s32 limit, const char *str);
