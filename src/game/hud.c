@@ -15,6 +15,7 @@
 #include "print.h"
 #include "engine/surface_load.h"
 #include "sprite/mdraw.h"
+#include "sprite/msprites.h"
 
 /* @file hud.c
  * This file implements HUD rendering and power meter animations.
@@ -514,16 +515,16 @@ void render_hud(void) {
             render_hud_timer();
         }
 
-        gDPSetCombineLERP(
-            gDisplayListHead++,
-            0, 0, 0, 0, 0, 0, 0, TEXEL0,
-            0, 0, 0, 0, 0, 0, 0, TEXEL0
-        );
-        gDPSetTexturePersp(gDisplayListHead++, G_TP_NONE);
-        gDPSetRenderMode(gDisplayListHead++, G_RM_AA_XLU_SURF, G_RM_AA_XLU_SURF2);
-        mfilter(1);
-        mprint_start();
-        mprint(50, 60, -1, "Hi, hello, this is a test!\n(using mdraw.c by devwizard)");
+        // gDPSetCombineLERP(
+        //     gDisplayListHead++,
+        //     0, 0, 0, 0, 0, 0, 0, TEXEL0,
+        //     0, 0, 0, 0, 0, 0, 0, TEXEL0
+        // );
+        // gDPSetTexturePersp(gDisplayListHead++, G_TP_NONE);
+        // gDPSetRenderMode(gDisplayListHead++, G_RM_AA_XLU_SURF, G_RM_AA_XLU_SURF2);
+        // mfilter(1);
+        // mprint_start();
+        // mprint(50, 60, -1, "Hi, hello, this is a test!\n(using mdraw.c by devwizard)");
 
         if (gSurfacePoolError & NOT_ENOUGH_ROOM_FOR_SURFACES)
         {

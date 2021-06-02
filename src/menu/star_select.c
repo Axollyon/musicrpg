@@ -246,26 +246,6 @@ void print_course_number(void) {
 
     create_dl_translation_matrix(MENU_MTX_PUSH, 158.0f, 81.0f, 0.0f);
 
-    // Full wood texture in JP & US, lower part of it on EU
-    gSPDisplayList(gDisplayListHead++, dl_menu_rgba16_wood_course);
-
-#ifdef VERSION_EU
-    // Change upper part of the wood texture depending of the language defined
-    switch (language) {
-        case LANGUAGE_ENGLISH:
-            gSPDisplayList(gDisplayListHead++, dl_menu_texture_course_upper);
-            break;
-        case LANGUAGE_FRENCH:
-            gSPDisplayList(gDisplayListHead++, dl_menu_texture_niveau_upper);
-            break;
-        case LANGUAGE_GERMAN:
-            gSPDisplayList(gDisplayListHead++, dl_menu_texture_kurs_upper);
-            break;
-    }
-
-    gSPDisplayList(gDisplayListHead++, dl_menu_rgba16_wood_course_end);
-#endif
-
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
@@ -368,32 +348,6 @@ void print_act_selector_strings(void) {
 #else
     print_course_number();
 #endif
-
-    gSPDisplayList(gDisplayListHead++, dl_menu_ia8_text_begin);
-    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
-    // Print the name of the selected act.
-    if (sVisibleStars != 0) {
-        selectedActName = segmented_to_virtual(actNameTbl[(gCurrCourseNum - 1) * 6 + sSelectedActIndex]);
-
-#ifdef VERSION_EU
-        print_menu_generic_string(get_str_x_pos_from_center(ACT_NAME_X, selectedActName, 8.0f), 81, selectedActName);
-#else
-        actNameX = get_str_x_pos_from_center(ACT_NAME_X, selectedActName, 8.0f);
-        print_menu_generic_string(actNameX, 81, selectedActName);
-#endif
-    }
-
-    // Print the numbers above each star.
-    for (i = 1; i <= sVisibleStars; i++) {
-        starNumbers[0] = i;
-#ifdef VERSION_EU
-        print_menu_generic_string(143 - sVisibleStars * 15 + i * 30, 38, starNumbers);
-#else
-        print_menu_generic_string(139 - sVisibleStars * 17 + i * 34, 38, starNumbers);
-#endif
-    }
-
-    gSPDisplayList(gDisplayListHead++, dl_menu_ia8_text_end);
  }
 
 /**

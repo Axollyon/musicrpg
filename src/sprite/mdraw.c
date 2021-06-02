@@ -191,18 +191,62 @@ void mprint_start(void)
     );
 }
 
-void mprint(int x, int y, unsigned int max, const char *str)
+int mprint_width(unsigned int line, unsigned int max, const char *str)
+{
+    const u8 *kern = segment_to_virtual(mprint_kern);
+    unsigned int width = 0;
+    unsigned int curLine = 0;
+    while (*str != 0 && max > 0)
+    {
+        if (*str == '\n')
+        {
+            curLine++;
+        }
+        else if (curLine == line)
+        {
+            width += kern[(int)*str];
+        }
+        else if (curLine > line)
+        {
+            return width;
+        }
+        str++;
+        max--;
+    }
+    return width;
+}
+
+void mprint(int x, int y, int align, unsigned int max, const char *str)
 {
 #define delta   (0x400*4*64/85)
     const u8 *const *table = segment_to_virtual(texture_mprint);
     const u8 *kern         = segment_to_virtual(mprint_kern);
     int st = mdraw.filter ? -16 : 0;
     int xl = x;
+    int line = 0;
+
+    switch (align) {
+        case ALIGN_CENTER:
+            x = xl - mprint_width(line, max, str) / 2;
+            break;
+        case ALIGN_RIGHT:
+            x = xl - mprint_width(line, max, str);
+    }
+
     while (*str != 0 && max > 0)
     {
         if (*str == '\n')
         {
-            x = xl;
+            line++;
+            switch (align) {
+                case ALIGN_LEFT:
+                    x = xl;
+                case ALIGN_CENTER:
+                    x = xl - mprint_width(line, max, str) / 2;
+                    break;
+                case ALIGN_RIGHT:
+                    x = xl - mprint_width(line, max, str);
+            }
             y += kern['\n'];
         }
         else
