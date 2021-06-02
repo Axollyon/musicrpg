@@ -5,7 +5,7 @@
 
 #ifndef __ASSEMBLER__
 
-typedef struct sprite
+typedef struct
 {
     const void *timg;
     u32 fmt:4;
