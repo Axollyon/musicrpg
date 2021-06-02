@@ -22,7 +22,7 @@ void mfilter(int filter)
 }
 
 /******************************************************************************
-/*                               Drawing sprite                               *
+ *                               Drawing sprite                               *
  ******************************************************************************/
 
 static const u8 msp_size[][2] =
@@ -170,6 +170,19 @@ void msprite(const MSPRITE *msp, int x, int y, int w, int h)
 extern const u8 *const texture_mprint[];
 extern const u8 mprint_kern[];
 
+static int mprint_w(const u8 *kern, uint max, const char *str)
+{
+    int w = 0;
+    while (max > 0 && *str != 0 && *str != '\n')
+    {
+        int c = *str;
+        str++;
+        max--;
+        w += kern[c];
+    }
+    return w;
+}
+
 void mprint_start(void)
 {
     gDPSetTile(
@@ -191,67 +204,32 @@ void mprint_start(void)
     );
 }
 
-int mprint_width(unsigned int line, unsigned int max, const char *str)
-{
-    const u8 *kern = segment_to_virtual(mprint_kern);
-    unsigned int width = 0;
-    unsigned int curLine = 0;
-    while (*str != 0 && max > 0)
-    {
-        if (*str == '\n')
-        {
-            curLine++;
-        }
-        else if (curLine == line)
-        {
-            width += kern[(int)*str];
-        }
-        else if (curLine > line)
-        {
-            return width;
-        }
-        str++;
-        max--;
-    }
-    return width;
-}
-
-void mprint(int x, int y, int align, unsigned int max, const char *str)
+void mprint(int x, int y, uint max, uint just, const char *str)
 {
 #define delta   (0x400*4*64/85)
     const u8 *const *table = segment_to_virtual(texture_mprint);
     const u8 *kern         = segment_to_virtual(mprint_kern);
     int st = mdraw.filter ? -16 : 0;
     int xl = x;
-    int line = 0;
-
-    switch (align) {
-        case ALIGN_CENTER:
-            x = xl - mprint_width(line, max, str) / 2;
-            break;
-        case ALIGN_RIGHT:
-            x = xl - mprint_width(line, max, str);
-    }
-
-    while (*str != 0 && max > 0)
+start:
+    if (just > 0)
     {
-        if (*str == '\n')
+        x -= mprint_w(kern, max, str) / just;
+    }
+    while (max > 0 && *str != 0)
+    {
+        int c = *str;
+        str++;
+        max--;
+        if (c == '\n')
         {
-            line++;
-            switch (align) {
-                case ALIGN_LEFT:
-                    x = xl;
-                case ALIGN_CENTER:
-                    x = xl - mprint_width(line, max, str) / 2;
-                    break;
-                case ALIGN_RIGHT:
-                    x = xl - mprint_width(line, max, str);
-            }
+            x = xl;
             y += kern['\n'];
+            goto start;
         }
         else
         {
-            const u8 *timg = table[(int)*str];
+            const u8 *timg = table[c];
             if (timg != NULL)
             {
                 gDPSetTextureImage(
@@ -269,10 +247,8 @@ void mprint(int x, int y, int align, unsigned int max, const char *str)
                 );
                 gDPPipeSync(video_gfx++);
             }
-            x += kern[(int)*str];
+            x += kern[c];
         }
-        str++;
-        max--;
     }
 #undef delta
 }

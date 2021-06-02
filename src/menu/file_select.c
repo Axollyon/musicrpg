@@ -2270,8 +2270,8 @@ static void draw_title_msprites(void) {
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_XLU_SURF, G_RM_AA_XLU_SURF2);
     mfilter(1);
     mprint_start();
-    mprint(640, 520, ALIGN_CENTER, -1, "START GAME");
-    mprint(640, 600, ALIGN_CENTER, -1, "OPTIONS");
+    mprint(640, 520, -1, MPRINT_CJUST, "START GAME");
+    mprint(640, 600, -1, MPRINT_CJUST, "OPTIONS");
 }
 
 /**
