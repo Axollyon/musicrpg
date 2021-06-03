@@ -59,6 +59,13 @@ static struct Object *sMainMenuButtons[NUM_BUTTONS];
 // sYesNoColor[0]: YES | sYesNoColor[1]: NO
 static u8 sYesNoColor[2];
 
+static u8 selectedButtonID = 0;
+static s16 stickTimer = 0;
+static u8 curButtonMax = 0;
+static u8 menuID = 0;
+static s16 selectTimer = 0;
+static s16 cancelTimer = 0;
+
 // The button that is selected when it is clicked.
 static s8 sSelectedButtonID = MENU_BUTTON_NONE;
 
@@ -71,9 +78,6 @@ static u8 sTextBaseAlpha = 0;
 // 2D position of the cursor on the screen.
 // sCursorPos[0]: X | sCursorPos[1]: Y
 static f32 sCursorPos[] = {0, 0};
-
-// Determines which graphic to use for the cursor.
-static s16 sCursorClickingTimer = 0;
 
 // Equal to sCursorPos if the cursor gets clicked, {-10000, -10000} otherwise.
 static s16 sClickPos[] = {-10000, -10000};
@@ -512,7 +516,7 @@ void bhv_menu_button_loop(void) {
                 bhv_menu_button_growing_from_submenu(gCurrentObject); // Only used for score files
             }
             sTextBaseAlpha = 0;
-            sCursorClickingTimer = 4;
+            selectTimer = 4;
             break;
         case MENU_BUTTON_STATE_FULLSCREEN: // Menu state
             break;
@@ -524,19 +528,19 @@ void bhv_menu_button_loop(void) {
                 bhv_menu_button_shrinking_to_submenu(gCurrentObject); // Only used for score files
             }
             sTextBaseAlpha = 0;
-            sCursorClickingTimer = 4;
+            selectTimer = 4;
             break;
         case MENU_BUTTON_STATE_ZOOM_IN_OUT:
             bhv_menu_button_zoom_in_out(gCurrentObject);
-            sCursorClickingTimer = 4;
+            selectTimer = 4;
             break;
         case MENU_BUTTON_STATE_ZOOM_IN:
             bhv_menu_button_zoom_in(gCurrentObject);
-            sCursorClickingTimer = 4;
+            selectTimer = 4;
             break;
         case MENU_BUTTON_STATE_ZOOM_OUT:
             bhv_menu_button_zoom_out(gCurrentObject);
-            sCursorClickingTimer = 4;
+            selectTimer = 4;
             break;
     }
     cur_obj_scale(gCurrentObject->oMenuButtonScale);
@@ -548,7 +552,7 @@ void bhv_menu_button_loop(void) {
 void exit_score_file_to_score_menu(struct Object *scoreFileButton, s8 scoreButtonID) {
     // Begin exit
     if (scoreFileButton->oMenuButtonState == MENU_BUTTON_STATE_FULLSCREEN
-        && sCursorClickingTimer == 2) {
+        && selectTimer == 2) {
         play_sound(SOUND_MENU_CAMERA_ZOOM_OUT, gGlobalSoundSource);
 #if ENABLE_RUMBLE
         queue_rumble_data(5, 80);
@@ -1404,7 +1408,36 @@ void check_main_menu_clicked_buttons(void) {
  * is loaded, and that checks what buttonID is clicked in the main menu.
  */
 void bhv_menu_button_manager_loop(void) {
-
+    handle_cursor_input();
+    switch (menuID) {
+        case 0:
+            curButtonMax = 1;
+            if (selectTimer == 2) {
+                play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+                switch (selectedButtonID) {
+                    case 0:
+                        menuID = 1;
+                        break;
+                    case 1:
+                        menuID = 2;
+                        break;
+                }
+                selectedButtonID = 0;
+            }
+            break;
+        case 1:
+            curButtonMax = 3;
+            if (cancelTimer == 2) {
+                play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, gGlobalSoundSource);
+                menuID = 0;
+                selectedButtonID = 0;
+            }
+            if (selectTimer == 2) {
+                play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+                sSelectedFileNum = selectedButtonID + 1;
+            }
+            break;
+    }
 }
 
 /**
@@ -1413,10 +1446,11 @@ void bhv_menu_button_manager_loop(void) {
  */
 void handle_cursor_button_input(void) {
     // If scoring a file, pressing A just changes the coin score mode.
-    if (gPlayer3Controller->buttonPressed & (A_BUTTON | B_BUTTON | START_BUTTON)) {
-        sClickPos[0] = sCursorPos[0];
-        sClickPos[1] = sCursorPos[1];
-        sCursorClickingTimer = 1;
+    if (gPlayer3Controller->buttonPressed & (A_BUTTON | START_BUTTON)) {
+        selectTimer = 1;
+    }
+    if (gPlayer3Controller->buttonPressed & B_BUTTON) {
+        cancelTimer = 1;
     }
 }
 
@@ -1428,44 +1462,68 @@ void handle_controller_cursor_input(void) {
     s16 rawStickY = gPlayer3Controller->rawStickY;
 
     // Handle deadzone
-    if (rawStickY > -2 && rawStickY < 2) {
+    if (rawStickY > -20 && rawStickY < 20) {
         rawStickY = 0;
     }
-    if (rawStickX > -2 && rawStickX < 2) {
+    if (rawStickX > -20 && rawStickX < 20) {
         rawStickX = 0;
     }
 
-    // Move cursor
-    sCursorPos[0] += rawStickX / 8;
-    sCursorPos[1] += rawStickY / 8;
-
-    // Stop cursor from going offscreen
-    if (sCursorPos[0] > 132.0f) {
-        sCursorPos[0] = 132.0f;
-    }
-    if (sCursorPos[0] < -132.0f) {
-        sCursorPos[0] = -132.0f;
+    if (rawStickX == 0 && rawStickY == 0) {
+        stickTimer = 0;
     }
 
-    if (sCursorPos[1] > 90.0f) {
-        sCursorPos[1] = 90.0f;
+    if (stickTimer == 0) {
+        if (rawStickY > 0) {
+            if (selectedButtonID == 0) {
+                selectedButtonID = curButtonMax;
+            }
+            else {
+                selectedButtonID--;
+            }
+            stickTimer = 5;
+        }
+        else if (rawStickY < 0) {
+            if (selectedButtonID == curButtonMax) {
+                selectedButtonID = 0;
+            }
+            else {
+                selectedButtonID++;
+            }
+            stickTimer = 5;
+        }
+
+        if (stickTimer == 5)
+        {
+            play_sound(SOUND_ACTION_BRUSH_HAIR, gGlobalSoundSource);
+        }
     }
-    if (sCursorPos[1] < -90.0f) {
-        sCursorPos[1] = -90.0f;
+    else if (stickTimer > 0)
+    {
+        stickTimer--;
     }
 
-    if (sCursorClickingTimer == 0) {
+    if (selectTimer == 0) {
         handle_cursor_button_input();
     }
 }
 
-/**
- * Prints the cursor (Mario Hand, different to the one in the Mario screen)
- * and loads it's controller inputs in handle_controller_cursor_input
- * to be usable on the file select.
- */
-void print_menu_cursor(void) {
-
+void handle_cursor_input(void) {
+    handle_controller_cursor_input();
+    if (selectTimer != 0) {
+        selectTimer++; // This is a very strange way to implement a timer? It counts up and
+                                // then resets to 0 instead of just counting down to 0.
+        if (selectTimer == 5) {
+            selectTimer = 0;
+        }
+    }
+    if (cancelTimer != 0) {
+        cancelTimer++; // This is a very strange way to implement a timer? It counts up and
+                                // then resets to 0 instead of just counting down to 0.
+        if (cancelTimer == 5) {
+            cancelTimer = 0;
+        }
+    }
 }
 
 /**
@@ -1863,7 +1921,7 @@ void print_erase_menu_prompt(s16 x, s16 y) {
         sEraseYesNoHoverState = MENU_ERASE_HOVER_NONE;
     }
     // If the cursor is clicked...
-    if (sCursorClickingTimer == 2) {
+    if (selectTimer == 2) {
         // ..and is hovering "YES", delete file
         if (sEraseYesNoHoverState == MENU_ERASE_HOVER_YES) {
             play_sound(SOUND_MARIO_WAAAOOOW, gGlobalSoundSource);
@@ -2261,18 +2319,82 @@ void print_save_file_scores(s8 fileIndex) {
  */
 static void draw_title_sprites(void) {
     draw_titlebg();
-    gDPSetCombineLERP(
-        gDisplayListHead++,
-        0, 0, 0, ENVIRONMENT, 0, 0, 0, TEXEL0,
-        0, 0, 0, ENVIRONMENT, 0, 0, 0, TEXEL0
-    );
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-    gDPSetTexturePersp(gDisplayListHead++, G_TP_NONE);
-    gDPSetRenderMode(gDisplayListHead++, G_RM_AA_XLU_SURF, G_RM_AA_XLU_SURF2);
-    mfilter(1);
-    mprint_start();
-    mprint(640, 540, -1, MPRINT_CJUST, "START GAME");
-    mprint(640, 640, -1, MPRINT_CJUST, "OPTIONS");
+    switch (menuID) {
+        case 0:
+            gDPSetCombineLERP(
+                gDisplayListHead++,
+                0, 0, 0, ENVIRONMENT, ENVIRONMENT, 0, TEXEL0, 0,
+                0, 0, 0, ENVIRONMENT, ENVIRONMENT, 0, TEXEL0, 0
+            );
+            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
+            gDPSetTexturePersp(gDisplayListHead++, G_TP_NONE);
+            gDPSetRenderMode(gDisplayListHead++, G_RM_AA_XLU_SURF, G_RM_AA_XLU_SURF2);
+            mfilter(1);
+            mprint_start();
+            if (selectedButtonID == 0) {
+                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+                mprint(640, 540, -1, MPRINT_CJUST, "START GAME");
+                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
+            }
+            else {
+                mprint(640, 540, -1, MPRINT_CJUST, "START GAME");
+            }
+            if (selectedButtonID == 1) {
+                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+                mprint(640, 640, -1, MPRINT_CJUST, "OPTIONS");
+                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
+            }
+            else {
+                mprint(640, 640, -1, MPRINT_CJUST, "OPTIONS");
+            }
+            break;
+        case 1:
+            gDPSetCombineLERP(
+                gDisplayListHead++,
+                0, 0, 0, ENVIRONMENT, ENVIRONMENT, 0, TEXEL0, 0,
+                0, 0, 0, ENVIRONMENT, ENVIRONMENT, 0, TEXEL0, 0
+            );
+            gDPSetTexturePersp(gDisplayListHead++, G_TP_NONE);
+            gDPSetRenderMode(gDisplayListHead++, G_RM_AA_XLU_SURF, G_RM_AA_XLU_SURF2);
+            mfilter(1);
+            mprint_start();
+            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+            mprint(640, 240, -1, MPRINT_CJUST, "SELECT A FILE");
+            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
+            if (selectedButtonID == 0) {
+                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+                mprint(320, 340, -1, MPRINT_LJUST, "FILE A");
+                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
+            }
+            else {
+                mprint(320, 340, -1, MPRINT_LJUST, "FILE A");
+            }
+            if (selectedButtonID == 1) {
+                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+                mprint(320, 440, -1, MPRINT_LJUST, "FILE B");
+                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
+            }
+            else {
+                mprint(320, 440, -1, MPRINT_LJUST, "FILE B");
+            }
+            if (selectedButtonID == 2) {
+                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+                mprint(320, 540, -1, MPRINT_LJUST, "FILE C");
+                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
+            }
+            else {
+                mprint(320, 540, -1, MPRINT_LJUST, "FILE C");
+            }
+            if (selectedButtonID == 3) {
+                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+                mprint(320, 640, -1, MPRINT_LJUST, "FILE D");
+                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
+            }
+            else {
+                mprint(320, 640, -1, MPRINT_LJUST, "FILE D");
+            }
+            break;
+    }
 }
 
 /**
@@ -2323,7 +2445,7 @@ s32 lvl_init_menu_values_and_cursor_pos(UNUSED s32 arg, UNUSED s32 unused) {
     }
     sClickPos[0] = -10000;
     sClickPos[1] = -10000;
-    sCursorClickingTimer = 0;
+    selectTimer = 0;
     sSelectedFileNum = 0;
     sSelectedFileIndex = MENU_BUTTON_NONE;
     sFadeOutText = FALSE;

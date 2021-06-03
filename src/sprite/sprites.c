@@ -3,7 +3,7 @@
 #include "game/game_init.h"
 
 extern const u16 texture_titlebg[];
-MSPRITE sprite_titlebg = {texture_titlebg, G_IM_FMT_RGBA, G_IM_SIZ_16b, 640, 480};
+MSPRITE sprite_titlebg = {texture_titlebg, G_IM_FMT_RGBA, G_IM_SIZ_16b, 480, 360};
 
 void draw_titlebg(void) {
     gDPSetCombineMode(gDisplayListHead++, G_CC_DECALRGBA, G_CC_DECALRGBA);
