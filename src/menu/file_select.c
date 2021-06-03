@@ -1437,6 +1437,14 @@ void bhv_menu_button_manager_loop(void) {
                 sSelectedFileNum = selectedButtonID + 1;
             }
             break;
+        case 2:
+            curButtonMax = 0;
+            if (cancelTimer == 2) {
+                play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, gGlobalSoundSource);
+                menuID = 0;
+                selectedButtonID = 0;
+            }
+            break;
     }
 }
 
@@ -2318,6 +2326,7 @@ void print_save_file_scores(s8 fileIndex) {
  * Also checks if all saves exists and defines text and main menu timers.
  */
 static void draw_title_sprites(void) {
+    int i = 0;
     draw_titlebg();
     switch (menuID) {
         case 0:
@@ -2331,21 +2340,21 @@ static void draw_title_sprites(void) {
             gDPSetRenderMode(gDisplayListHead++, G_RM_AA_XLU_SURF, G_RM_AA_XLU_SURF2);
             mfilter(1);
             mprint_start();
-            if (selectedButtonID == 0) {
-                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-                mprint(640, 540, -1, MPRINT_CJUST, "START GAME");
-                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
-            }
-            else {
-                mprint(640, 540, -1, MPRINT_CJUST, "START GAME");
-            }
-            if (selectedButtonID == 1) {
-                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-                mprint(640, 640, -1, MPRINT_CJUST, "OPTIONS");
-                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
-            }
-            else {
-                mprint(640, 640, -1, MPRINT_CJUST, "OPTIONS");
+            for (i = 0; i < 2; i++) {
+                if (selectedButtonID == i) {
+                    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+                }
+                switch (i) {
+                    case 0: 
+                        mprint(640, 540, -1, MPRINT_CJUST, "START GAME");
+                        break;
+                    case 1:
+                        mprint(640, 640, -1, MPRINT_CJUST, "OPTIONS");
+                        break;
+                }
+                if (selectedButtonID == i) {
+                    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
+                }
             }
             break;
         case 1:
@@ -2361,37 +2370,41 @@ static void draw_title_sprites(void) {
             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
             mprint(640, 240, -1, MPRINT_CJUST, "SELECT A FILE");
             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
-            if (selectedButtonID == 0) {
-                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-                mprint(320, 340, -1, MPRINT_LJUST, "FILE A");
-                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
-            }
-            else {
-                mprint(320, 340, -1, MPRINT_LJUST, "FILE A");
-            }
-            if (selectedButtonID == 1) {
-                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-                mprint(320, 440, -1, MPRINT_LJUST, "FILE B");
-                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
-            }
-            else {
-                mprint(320, 440, -1, MPRINT_LJUST, "FILE B");
-            }
-            if (selectedButtonID == 2) {
-                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-                mprint(320, 540, -1, MPRINT_LJUST, "FILE C");
-                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
-            }
-            else {
-                mprint(320, 540, -1, MPRINT_LJUST, "FILE C");
-            }
-            if (selectedButtonID == 3) {
-                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-                mprint(320, 640, -1, MPRINT_LJUST, "FILE D");
-                gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
-            }
-            else {
-                mprint(320, 640, -1, MPRINT_LJUST, "FILE D");
+            for (i = 0; i < 4; i++) {
+                char fileStatus[0x20];
+                if (save_file_exists(i)) {
+                    s16 starCount = save_file_get_total_star_count(i, COURSE_MIN - 1, COURSE_MAX - 1);
+                    sprintf(fileStatus, "%d STAR%s", starCount, starCount > 1 ? "S" : "");
+                }
+                else {
+                    sprintf(fileStatus, "%s", "EMPTY");
+                }
+
+                if (selectedButtonID == i) {
+                    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+                }
+
+                switch (i) {
+                    case 0: 
+                            mprint(320, 340, -1, MPRINT_LJUST, "FILE A");
+                            mprint(960, 340, -1, MPRINT_RJUST, fileStatus);
+                        break;
+                    case 1:
+                        mprint(320, 440, -1, MPRINT_LJUST, "FILE B");
+                        mprint(960, 440, -1, MPRINT_RJUST, fileStatus);
+                        break;
+                    case 2:
+                        mprint(320, 540, -1, MPRINT_LJUST, "FILE C");
+                        mprint(960, 540, -1, MPRINT_RJUST, fileStatus);
+                        break;
+                    case 3:
+                        mprint(320, 640, -1, MPRINT_LJUST, "FILE D");
+                        mprint(960, 640, -1, MPRINT_RJUST, fileStatus);
+                        break;
+                }
+                if (selectedButtonID == i) {
+                    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
+                }
             }
             break;
     }
