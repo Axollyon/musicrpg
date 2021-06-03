@@ -1442,7 +1442,7 @@ void bhv_menu_button_manager_loop(void) {
             if (cancelTimer == 2) {
                 play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, gGlobalSoundSource);
                 menuID = 0;
-                selectedButtonID = 0;
+                selectedButtonID = 1;
             }
             break;
     }
