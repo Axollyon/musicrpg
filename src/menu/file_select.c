@@ -2372,6 +2372,11 @@ static void draw_title_sprites(void) {
             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
             for (i = 0; i < 4; i++) {
                 char fileStatus[0x20];
+                char fileName[0x10];
+                char fileLetter[1] = {'A' + i};
+
+                sprintf(fileName, "FILE %s", fileLetter);
+
                 if (save_file_exists(i)) {
                     s16 starCount = save_file_get_total_star_count(i, COURSE_MIN - 1, COURSE_MAX - 1);
                     sprintf(fileStatus, "%d STAR%s", starCount, starCount > 1 ? "S" : "");
@@ -2384,24 +2389,9 @@ static void draw_title_sprites(void) {
                     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
                 }
 
-                switch (i) {
-                    case 0: 
-                            mprint(320, 340, -1, MPRINT_LJUST, "FILE A");
-                            mprint(960, 340, -1, MPRINT_RJUST, fileStatus);
-                        break;
-                    case 1:
-                        mprint(320, 440, -1, MPRINT_LJUST, "FILE B");
-                        mprint(960, 440, -1, MPRINT_RJUST, fileStatus);
-                        break;
-                    case 2:
-                        mprint(320, 540, -1, MPRINT_LJUST, "FILE C");
-                        mprint(960, 540, -1, MPRINT_RJUST, fileStatus);
-                        break;
-                    case 3:
-                        mprint(320, 640, -1, MPRINT_LJUST, "FILE D");
-                        mprint(960, 640, -1, MPRINT_RJUST, fileStatus);
-                        break;
-                }
+                mprint(320, 340 + 100 * i, -1, MPRINT_LJUST, fileName);
+                mprint(960, 340 + 100 * i, -1, MPRINT_RJUST, fileStatus);
+
                 if (selectedButtonID == i) {
                     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
                 }
