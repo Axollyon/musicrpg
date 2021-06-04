@@ -21,6 +21,8 @@
 #include "config.h"
 
 const LevelScript level_intro_splash_screen[] = {
+    // Skip straight to main menu
+    JUMP(script_intro_L1),
     INIT_LEVEL(),
 #ifdef SKIP_TITLE_SCREEN
     EXIT_AND_EXECUTE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_mario_head_regular),

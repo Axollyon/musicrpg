@@ -24,6 +24,9 @@ Fork of the ultrasm64 repo by CrashOveride which includes the following commonly
 
 It also uncringes the way that apply_patch.sh works, and removes the black border.
 
+# Super Mario 64 Lighting Engine
+
+- This repo contains a WIP lighting engine for SM64. It supports directional lights and point lights, the latter being able to use either dynamic directional lights or real point lights if using F3DZEX.
 # UltraSM64
 
 - This repo contains a full decompilation of Super Mario 64 (J), (U), (E), and (SH).

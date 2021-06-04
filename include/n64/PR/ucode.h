@@ -21,9 +21,9 @@
 #ifndef _UCODE_H_
 #define	_UCODE_H_
 
-#ifdef _LANGUAGE_C_PLUS_PLUS
-extern "C" {
-#endif
+#define SP_DRAM_STACK_SIZE8 0x400
+#define SP_UCODE_SIZE       0x1000
+#define SP_UCODE_DATA_SIZE  0x800
 
 #include <PR/ultratypes.h>
 
