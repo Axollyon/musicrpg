@@ -28,10 +28,10 @@ typedef struct msprite
 MSPRITE;
 
 /* Filtering */
-extern void mfilter(int filter);
+extern void mfilter(uint filter);
 
 /* Drawing sprite */
-extern void msprite(const MSPRITE *msp, int x, int y, int w, int h);
+extern void msprite(const MSPRITE *msp, int x, int y, uint w, uint h);
 
 /* Printing */
 extern void mprint_start(void);

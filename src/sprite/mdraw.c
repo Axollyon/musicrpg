@@ -11,11 +11,11 @@ extern Gfx *video_gfx;
 
 static struct
 {
-    int filter;
+    uint filter;
 }
 mdraw;
 
-void mfilter(int filter)
+void mfilter(uint filter)
 {
     mdraw.filter = filter;
     gDPSetTextureFilter(video_gfx++, mdraw.filter ? G_TF_BILERP : G_TF_POINT);
@@ -33,34 +33,34 @@ static const u8 msp_size[][2] =
     { 32, 32},
 };
 
-void msprite(const MSPRITE *msp, int x, int y, int w, int h)
+void msprite(const MSPRITE *msp, int x, int y, uint w, uint h)
 {
-    int fmt = msp->fmt;
-    int siz = msp->siz;
-    int tw  = msp->w;
-    int th  = msp->h;
-    int cw;
-    int ch;
-    int dsdx;
-    int dtdy;
-    int ty;
+    uint fmt = msp->fmt;
+    uint siz = msp->siz;
+    uint tw  = msp->w;
+    uint th  = msp->h;
+    uint cw;
+    uint ch;
+    uint dsdx;
+    uint dtdy;
+    uint ty;
     cw = msp_size[siz][0];
     ch = msp_size[siz][1];
     if (mdraw.filter)
     {
-        cw >>= 1;
+        cw /= 2;
     }
-    dsdx = 0x400*4*tw/w;
-    dtdy = 0x400*4*th/h;
+    dsdx = (0x400*4*tw + w/2) / w;
+    dtdy = (0x400*4*th + h/2) / h;
     gDPSetTextureImage(video_gfx++, fmt, siz, tw, msp->timg);
     for (ty = 0; ty < th; ty += ch)
     {
-        int ult;
-        int lrt;
+        uint ult;
+        uint lrt;
         int yl;
         int yh;
         int t;
-        int tx;
+        uint tx;
         ult = ty;
         lrt = ty + ch;
         if (lrt > th)
@@ -93,12 +93,12 @@ void msprite(const MSPRITE *msp, int x, int y, int w, int h)
         }
         for (tx = 0; tx < tw; tx += cw)
         {
-            int uls;
-            int lrs;
+            uint uls;
+            uint lrs;
             int xl;
             int xh;
             int s;
-            int line;
+            uint line;
             uls = tx;
             lrs = tx + cw;
             if (lrs > tw)
@@ -170,9 +170,9 @@ void msprite(const MSPRITE *msp, int x, int y, int w, int h)
 extern const u8 *const texture_mprint[];
 extern const u8 mprint_kern[];
 
-static int mprint_w(const u8 *kern, uint max, const char *str)
+static uint mprint_w(const u8 *kern, uint max, const char *str)
 {
-    int w = 0;
+    uint w = 0;
     while (max > 0 && *str != 0 && *str != '\n')
     {
         int c = *str;
