@@ -2347,13 +2347,13 @@ static void draw_title_sprites(void) {
                 }
                 switch (i) {
                     case 0: 
-                        mprint(640, 540, -1, MPRINT_CJUST, 1.f, "START GAME");
+                        mprint(640, 540, 85, -1, MPRINT_CJUST, "START GAME");
                         break;
                     case 1:
-                        mprint(640, 640, -1, MPRINT_CJUST, 1.f, "OPTIONS");
+                        mprint(640, 640, 85, -1, MPRINT_CJUST, "OPTIONS");
                         break;
                     case 2:
-                        mprint(640, 740, -1, MPRINT_CJUST, 1.f, "CREDITS");
+                        mprint(640, 740, 85, -1, MPRINT_CJUST, "CREDITS");
                         break;
                 }
                 if (selectedButtonID == i) {
@@ -2372,7 +2372,7 @@ static void draw_title_sprites(void) {
             mfilter(1);
             mprint_start();
             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-            mprint(640, 240, -1, MPRINT_CJUST, 1.f, "SELECT A FILE");
+            mprint(640, 240, 85, -1, MPRINT_CJUST, "SELECT A FILE");
             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
             for (i = 0; i < 4; i++) {
                 char fileStatus[0x20];
@@ -2393,8 +2393,8 @@ static void draw_title_sprites(void) {
                     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
                 }
 
-                mprint(320, 340 + 100 * i, -1, MPRINT_LJUST, 1.f, fileName);
-                mprint(960, 340 + 100 * i, -1, MPRINT_RJUST, 1.f, fileStatus);
+                mprint(320, 340 + 100 * i, 85, -1, MPRINT_LJUST, fileName);
+                mprint(960, 340 + 100 * i, 85, -1, MPRINT_RJUST, fileStatus);
 
                 if (selectedButtonID == i) {
                     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
@@ -2415,14 +2415,14 @@ static void draw_title_sprites(void) {
             mfilter(1);
             mprint_start();
             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-            mprint(640, 32, -1, MPRINT_CJUST, 1.f, "CREDITS\nTEAM [placeholder]");
-            mprint(300, 220, -1, MPRINT_LJUST, 0.8f, "AXOLLYON");
-            mprint(300, 292, -1, MPRINT_LJUST, 0.8f, "CONCEPT, MODELS,\nART, AND CODE");
-            mprint(980, 440, -1, MPRINT_RJUST, 0.8f, "DEVWIZARD");
-            mprint(980, 512, -1, MPRINT_RJUST, 0.8f, "CODE AND SPRITE ENGINE");
-            mprint(300, 632, -1, MPRINT_LJUST, 0.8f, "QJROCKS");
-            mprint(300, 714, -1, MPRINT_LJUST, 0.8f, "MUSIC AND MODELS");
-            mprint(640, 828, -1, MPRINT_CJUST, 0.65f, "(A) - NEXT");
+            mprint(640, 32, 85, -1, MPRINT_CJUST, "CREDITS\nTEAM [placeholder]");
+            mprint(300, 220, 68, -1, MPRINT_LJUST, "AXOLLYON");
+            mprint(300, 292, 68, -1, MPRINT_LJUST, "CONCEPT, MODELS,\nART, AND CODE");
+            mprint(980, 440, 68, -1, MPRINT_RJUST, "DEVWIZARD");
+            mprint(980, 512, 68, -1, MPRINT_RJUST, "CODE AND SPRITE ENGINE");
+            mprint(300, 632, 68, -1, MPRINT_LJUST, "QJROCKS");
+            mprint(300, 714, 68, -1, MPRINT_LJUST, "MUSIC AND MODELS");
+            mprint(640, 828, 55, -1, MPRINT_CJUST, "(A) - NEXT");
             draw_creditspfp(0, 96, 220);
             draw_creditspfp(1, 992, 412);
             draw_creditspfp(2, 96, 604);
