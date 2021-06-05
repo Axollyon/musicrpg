@@ -170,7 +170,7 @@ void msprite(const MSPRITE *msp, int x, int y, uint w, uint h)
 extern const u8 *const texture_mprint[];
 extern const u8 mprint_kern[];
 
-static uint mprint_w(const u8 *kern, uint max, const char *str)
+static uint mprint_w(const u8 *kern, uint max, float scale, const char *str)
 {
     uint w = 0;
     while (max > 0 && *str != 0 && *str != '\n')
@@ -178,7 +178,7 @@ static uint mprint_w(const u8 *kern, uint max, const char *str)
         int c = *str;
         str++;
         max--;
-        w += kern[c];
+        w += kern[c] * scale;
     }
     return w;
 }
@@ -204,7 +204,7 @@ void mprint_start(void)
     );
 }
 
-void mprint(int x, int y, uint max, uint just, const char *str)
+void mprint(int x, int y, uint max, uint just, float scale, const char *str)
 {
 #define delta   (0x400*4*64/85)
     const u8 *const *table = segment_to_virtual(texture_mprint);
@@ -214,7 +214,7 @@ void mprint(int x, int y, uint max, uint just, const char *str)
 start:
     if (just > 0)
     {
-        x -= mprint_w(kern, max, str) / just;
+        x -= mprint_w(kern, max, scale, str) / just;
     }
     while (max > 0 && *str != 0)
     {
@@ -224,7 +224,7 @@ start:
         if (c == '\n')
         {
             x = xl;
-            y += kern['\n'];
+            y += kern['\n'] * scale;
             goto start;
         }
         else
@@ -243,11 +243,11 @@ start:
                 );
                 gSPTextureRectangle(
                     video_gfx++, x, y, x+85, y+85,
-                    G_TX_RENDERTILE, st, st, delta, delta
+                    G_TX_RENDERTILE, st, st, delta / scale, delta / scale
                 );
                 gDPPipeSync(video_gfx++);
             }
-            x += kern[c];
+            x += kern[c] * scale;
         }
     }
 #undef delta

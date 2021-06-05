@@ -1411,17 +1411,10 @@ void bhv_menu_button_manager_loop(void) {
     handle_cursor_input();
     switch (menuID) {
         case 0:
-            curButtonMax = 1;
+            curButtonMax = 2;
             if (selectTimer == 2) {
                 play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
-                switch (selectedButtonID) {
-                    case 0:
-                        menuID = 1;
-                        break;
-                    case 1:
-                        menuID = 2;
-                        break;
-                }
+                menuID = selectedButtonID + 1;
                 selectedButtonID = 0;
             }
             break;
@@ -1438,6 +1431,14 @@ void bhv_menu_button_manager_loop(void) {
             }
             break;
         case 2:
+            curButtonMax = 0;
+            if (cancelTimer == 2) {
+                play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, gGlobalSoundSource);
+                menuID = 0;
+                selectedButtonID = 1;
+            }
+            break;
+        case 3:
             curButtonMax = 0;
             if (cancelTimer == 2) {
                 play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, gGlobalSoundSource);
@@ -1481,7 +1482,7 @@ void handle_controller_cursor_input(void) {
         stickTimer = 0;
     }
 
-    if (stickTimer == 0) {
+    if (stickTimer == 0 && curButtonMax > 1) {
         if (rawStickY > 0) {
             if (selectedButtonID == 0) {
                 selectedButtonID = curButtonMax;
@@ -2340,16 +2341,19 @@ static void draw_title_sprites(void) {
             gDPSetRenderMode(gDisplayListHead++, G_RM_AA_XLU_SURF, G_RM_AA_XLU_SURF2);
             mfilter(1);
             mprint_start();
-            for (i = 0; i < 2; i++) {
+            for (i = 0; i < 3; i++) {
                 if (selectedButtonID == i) {
                     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
                 }
                 switch (i) {
                     case 0: 
-                        mprint(640, 540, -1, MPRINT_CJUST, "START GAME");
+                        mprint(640, 540, -1, MPRINT_CJUST, 1.f, "START GAME");
                         break;
                     case 1:
-                        mprint(640, 640, -1, MPRINT_CJUST, "OPTIONS");
+                        mprint(640, 640, -1, MPRINT_CJUST, 1.f, "OPTIONS");
+                        break;
+                    case 2:
+                        mprint(640, 740, -1, MPRINT_CJUST, 1.f, "CREDITS");
                         break;
                 }
                 if (selectedButtonID == i) {
@@ -2368,7 +2372,7 @@ static void draw_title_sprites(void) {
             mfilter(1);
             mprint_start();
             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-            mprint(640, 240, -1, MPRINT_CJUST, "SELECT A FILE");
+            mprint(640, 240, -1, MPRINT_CJUST, 1.f, "SELECT A FILE");
             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
             for (i = 0; i < 4; i++) {
                 char fileStatus[0x20];
@@ -2389,13 +2393,39 @@ static void draw_title_sprites(void) {
                     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
                 }
 
-                mprint(320, 340 + 100 * i, -1, MPRINT_LJUST, fileName);
-                mprint(960, 340 + 100 * i, -1, MPRINT_RJUST, fileStatus);
+                mprint(320, 340 + 100 * i, -1, MPRINT_LJUST, 1.f, fileName);
+                mprint(960, 340 + 100 * i, -1, MPRINT_RJUST, 1.f, fileStatus);
 
                 if (selectedButtonID == i) {
                     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
                 }
             }
+            break;
+        case 2:
+
+            break;
+        case 3:
+            gDPSetCombineLERP(
+                gDisplayListHead++,
+                0, 0, 0, ENVIRONMENT, ENVIRONMENT, 0, TEXEL0, 0,
+                0, 0, 0, ENVIRONMENT, ENVIRONMENT, 0, TEXEL0, 0
+            );
+            gDPSetTexturePersp(gDisplayListHead++, G_TP_NONE);
+            gDPSetRenderMode(gDisplayListHead++, G_RM_AA_XLU_SURF, G_RM_AA_XLU_SURF2);
+            mfilter(1);
+            mprint_start();
+            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+            mprint(640, 32, -1, MPRINT_CJUST, 1.f, "CREDITS\nTEAM [placeholder]");
+            mprint(300, 220, -1, MPRINT_LJUST, 0.8f, "AXOLLYON");
+            mprint(300, 292, -1, MPRINT_LJUST, 0.8f, "CONCEPT, MODELS,\nART, AND CODE");
+            mprint(980, 440, -1, MPRINT_RJUST, 0.8f, "DEVWIZARD");
+            mprint(980, 512, -1, MPRINT_RJUST, 0.8f, "CODE AND SPRITE ENGINE");
+            mprint(300, 632, -1, MPRINT_LJUST, 0.8f, "QJROCKS");
+            mprint(300, 714, -1, MPRINT_LJUST, 0.8f, "MUSIC AND MODELS");
+            mprint(640, 828, -1, MPRINT_CJUST, 0.65f, "(A) - NEXT");
+            draw_creditspfp(0, 96, 220);
+            draw_creditspfp(1, 992, 412);
+            draw_creditspfp(2, 96, 604);
             break;
     }
 }

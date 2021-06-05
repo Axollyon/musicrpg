@@ -12,6 +12,10 @@
 
 #include "levels/menu/titlebg.c"
 
+#include "levels/menu/axollyon.c"
+#include "levels/menu/devwizard.c"
+#include "levels/menu/qjrocks.c"
+
 const Collision main_menu_seg7_collision[] = {
     COL_INIT(),
     COL_VERTEX_INIT(0x4),
