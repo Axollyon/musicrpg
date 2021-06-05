@@ -1443,7 +1443,19 @@ void bhv_menu_button_manager_loop(void) {
             if (cancelTimer == 2) {
                 play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, gGlobalSoundSource);
                 menuID = 0;
-                selectedButtonID = 1;
+                selectedButtonID = 2;
+            }
+            if (selectTimer == 2) {
+                play_sound(SOUND_MENU_CLICK_FILE_SELECT, gGlobalSoundSource);
+                menuID = 4;
+            }
+            break;
+        case 4:
+            curButtonMax = 0;
+            if (cancelTimer == 2 || selectTimer == 2) {
+                play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, gGlobalSoundSource);
+                menuID = 0;
+                selectedButtonID = 2;
             }
             break;
     }
@@ -2347,19 +2359,21 @@ static void draw_title_sprites(void) {
                 }
                 switch (i) {
                     case 0: 
-                        mprint(640, 540, 85, -1, MPRINT_CJUST, "START GAME");
+                        mprint(640, 500, 85, -1, MPRINT_CJUST, "START GAME");
                         break;
                     case 1:
-                        mprint(640, 640, 85, -1, MPRINT_CJUST, "OPTIONS");
+                        mprint(640, 600, 85, -1, MPRINT_CJUST, "OPTIONS");
                         break;
                     case 2:
-                        mprint(640, 740, 85, -1, MPRINT_CJUST, "CREDITS");
+                        mprint(640, 700, 85, -1, MPRINT_CJUST, "CREDITS");
                         break;
                 }
                 if (selectedButtonID == i) {
                     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
                 }
             }
+            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+            mprint(640, 828, 55, -1, MPRINT_CJUST, "(A) - SELECT");
             break;
         case 1:
             gDPSetCombineLERP(
@@ -2400,9 +2414,21 @@ static void draw_title_sprites(void) {
                     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 64);
                 }
             }
+            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+            mprint(640, 828, 55, -1, MPRINT_CJUST, "(A) - SELECT    (B) - BACK");
             break;
         case 2:
-
+            gDPSetCombineLERP(
+                gDisplayListHead++,
+                0, 0, 0, ENVIRONMENT, ENVIRONMENT, 0, TEXEL0, 0,
+                0, 0, 0, ENVIRONMENT, ENVIRONMENT, 0, TEXEL0, 0
+            );
+            gDPSetTexturePersp(gDisplayListHead++, G_TP_NONE);
+            gDPSetRenderMode(gDisplayListHead++, G_RM_AA_XLU_SURF, G_RM_AA_XLU_SURF2);
+            mfilter(1);
+            mprint_start();
+            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+            mprint(640, 828, 55, -1, MPRINT_CJUST, "(B) - BACK");
             break;
         case 3:
             gDPSetCombineLERP(
@@ -2422,10 +2448,32 @@ static void draw_title_sprites(void) {
             mprint(980, 512, 68, -1, MPRINT_RJUST, "CODE AND SPRITE ENGINE");
             mprint(300, 632, 68, -1, MPRINT_LJUST, "QJROCKS");
             mprint(300, 714, 68, -1, MPRINT_LJUST, "MUSIC AND MODELS");
-            mprint(640, 828, 55, -1, MPRINT_CJUST, "(A) - NEXT");
+            mprint(640, 828, 55, -1, MPRINT_CJUST, "(A) - NEXT    (B) - BACK");
             draw_creditspfp(0, 96, 220);
             draw_creditspfp(1, 992, 412);
             draw_creditspfp(2, 96, 604);
+            break;
+        case 4:
+            gDPSetCombineLERP(
+                gDisplayListHead++,
+                0, 0, 0, ENVIRONMENT, ENVIRONMENT, 0, TEXEL0, 0,
+                0, 0, 0, ENVIRONMENT, ENVIRONMENT, 0, TEXEL0, 0
+            );
+            gDPSetTexturePersp(gDisplayListHead++, G_TP_NONE);
+            gDPSetRenderMode(gDisplayListHead++, G_RM_AA_XLU_SURF, G_RM_AA_XLU_SURF2);
+            mfilter(1);
+            mprint_start();
+            gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+            mprint(640, 32, 85, -1, MPRINT_CJUST, "CREDITS\nSPECIAL THANKS");
+            mprint(340, 220, 68, -1, MPRINT_CJUST, "SIMPLEFLIPS\nMUSIC COMPETITION");
+            mprint(940, 220, 68, -1, MPRINT_CJUST, "WISEGUY\nLIGHTING ENGINE");
+            mprint(340, 368, 68, -1, MPRINT_CJUST, "REONU\nBASE REPO AND HELP");
+            mprint(940, 368, 68, -1, MPRINT_CJUST, "CRASHOVERIDE\nULTRASM64");
+            mprint(340, 516, 68, -1, MPRINT_CJUST, "N64 DECOMP TEAM\nSM64 DECOMP");
+            mprint(940, 516, 68, -1, MPRINT_CJUST, "PLACEHOLDER\nPLACEHOLDER");
+            mprint(340, 664, 68, -1, MPRINT_CJUST, "PLACEHOLDER\nPLACEHOLDER");
+            mprint(940, 664, 68, -1, MPRINT_CJUST, "YOU\nFOR PLAYING :)");
+            mprint(640, 828, 55, -1, MPRINT_CJUST, "(A)/ (B) - BACK");
             break;
     }
 }
