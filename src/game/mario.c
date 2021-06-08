@@ -1729,12 +1729,17 @@ s32 execute_mario_action(UNUSED struct Object *o) {
             return 0;
         }
 
-        {
+        if (gCurrCourseNum == 0) {
             Vec3f dir = {0.0f, -1.0f, 0.0f};
             // Vec3f emit = {gMarioState->pos[0], gMarioState->pos[1] + 100, gMarioState->pos[2]};
             set_directional_light(dir, 48, 48, 48);
             set_ambient_light(64, 64, 96);
             // emit_light(emit, 255, 255, 255, 1, 0, 0);
+        }
+        else {
+            Vec3f dir = {0.5f, -0.5f, 0.0f};
+            set_directional_light(dir, 256, 256, 256);
+            set_ambient_light(128, 128, 128);
         }
 
         // The function can loop through many action shifts in one frame,
